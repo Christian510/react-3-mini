@@ -29,20 +29,34 @@ class App extends Component {
   }
 
   getVehicles() {
-    // axios (GET)
+    axios.get('https://joes-autos.herokuapp.com/api/vehicles').then(function(response){
+      toast.success("Successfully got vehicles");
+      this.setState( {'vehiclesToDisplay': response.data} );
+    }).catch( () => toast.error("Failed to get vehicles") );
     // setState with response -> vehiclesToDisplay
   }
 
   getPotentialBuyers() {
+    console.log( axios.get('https://joes-autos.herokuapp.com/api/buyers'))
+    axios.get('https://joes-autos.herokuapp.com/api/buyers').then(function(response){
+      toast.success("Successfully found buyers")
+      this.setState( {'buyersToDisplay': response.data} )
+      console.log(response.data)
+    })
     // axios (GET)
     // setState with response -> buyersToDisplay
   }
 
   sellCar(id) {
+    axios.delete(`https://joes-autos.herokuapp.com/api/vehicles${id}`)
+    .then(function(response){
+      toast.success("Sucessfully delated vehicle")
+      this.setState({ 'vehiclesToDisplay': response.data.vehicles })
+    }).castch("Failed to sell car")
     // axios (DELETE)
     // setState with response -> vehiclesToDisplay
   }
-
+    // I fail to see how I can inspect the 'data' when I can't find the event that trigers this method.
   filterByMake() {
     let make = this.selectedMake.value;
 
@@ -58,6 +72,13 @@ class App extends Component {
   }
 
   updatePrice(priceChange, id) {
+    axios.put(`https://joes-autos.herokuapp.com/api/vehicles/${id}/${priceChange}`)
+    .then(function(response){
+      console.log(response.data.vehicles);
+      toast.success("Successfully got pricing");
+      this.setState( {'vehiclesToDisplay': response.data.vehicles} );
+    }).catch(() => toast.error("Failed to fetch vehicles"));
+
     // axios (PUT)
     // setState with response -> vehiclesToDisplay
   }
@@ -70,11 +91,17 @@ class App extends Component {
       year: this.year.value,
       price: this.price.value
     };
+      axios.post('https://joes-autos.herokuapp.com/api/vehicles', newCar).then(function(response){
+        console.log(newCar);
+        toast.success("Successfully created new vehicle");
+        this.setState( {'vehiclesToDislplay': response.data.vehicles} );
+      }).catch(() => toast.error("Failed to get new vehicle")); 
 
     // axios (POST)
     // setState with response -> vehiclesToDisplay
   }
-
+  // *** I did not get that newCar was a parmater to be passed into axios.post.  I added it to the url.
+  
   addBuyer() {
     let newBuyer = {
       name: this.name.value,
